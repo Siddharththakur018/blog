@@ -59,7 +59,7 @@ function Navbar() {
                         Contact Us
                     </NavLink>
                     {!loading && isLoggedIn ? (
-                        <NavLink to="/create-blogs" className="hover:text-blue-400 transition">
+                        <NavLink to="/blog-view" className="hover:text-blue-400 transition">
                             Create Blogs
                         </NavLink>
                     ) : !loading ? (
@@ -155,7 +155,7 @@ function Navbar() {
                     </NavLink>
                     {!loading && isLoggedIn ? (
                         <NavLink
-                            to="/create-blogs"
+                            to="/blog-view"
                             className="hover:text-blue-400 text-xl transition"
                             onClick={() => setIsOpen(false)}
                         >

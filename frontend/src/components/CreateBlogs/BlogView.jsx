@@ -1,10 +1,10 @@
-// CreateBlogs.jsx
+// BlogView.jsx
 import React from 'react';
 import BlogTable from './BlogTable';
 
 
 
-const CreateBlogs = () => {
+const BlogView = () => {
 
     return (
         <>
@@ -14,4 +14,4 @@ const CreateBlogs = () => {
     );
 };
 
-export default CreateBlogs;
+export default BlogView;

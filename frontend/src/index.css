@@ -5,3 +5,12 @@
 body {
   font-family: 'Mona Sans', sans-serif;
 }
+
+.custom-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-scroll {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}

@@ -1,24 +1,29 @@
 import React, { useState } from 'react';
-
-import $ from 'jquery';
-window.$ = $;
-window.jQuery = $;
-
-import 'froala-editor/js/froala_editor.pkgd.min.js';
-import 'froala-editor/css/froala_editor.pkgd.min.css';
-import 'froala-editor/css/froala_style.min.css';
-import 'font-awesome/css/font-awesome.css';
-
-import FroalaEditor from 'react-froala-wysiwyg';
+import { Editor } from '@tinymce/tinymce-react';
+import { ArrowLeft } from 'phosphor-react';
+import { Link, useLocation } from 'react-router-dom';
 import PublishButton from './PublishButton';
 
 function BlogMaker() {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const location = useLocation();
+  const editBlog = location.state?.blog;
+
+  const [title, setTitle] = useState(editBlog?.title || '');
+  const [content, setContent] = useState(editBlog?.content || '');
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-2xl font-semibold mb-4">Create Blog Post</h2>
+      <Link
+        to="/blog-view"
+        className="flex items-center text-gray-600 hover:text-black transition duration-200 mb-8"
+      >
+        <ArrowLeft size={24} weight="bold" className="mr-2" />
+        <span className="text-sm font-medium">Back to Blogs</span>
+      </Link>
+
+      <h2 className="text-2xl font-semibold mb-4">
+        {editBlog ? 'Update Blog Post' : 'Create Blog Post'}
+      </h2>
 
       <input
         type="text"
@@ -28,26 +33,48 @@ function BlogMaker() {
         onChange={(e) => setTitle(e.target.value)}
       />
 
-      <FroalaEditor
-        tag='textarea'
-        model={content}
-        onModelChange={setContent}
-        config={{
-          placeholderText: 'Write your blog here...',
-          charCounterCount: true,
-          heightMin: 300,
-          toolbarButtons: [
-            'bold', 'italic', 'underline', 'strikeThrough', '|',
-            'formatUL', 'formatOL', '|',
-            'insertLink', 'insertImage', 'insertVideo', '|',
-            'undo', 'redo', 'html'
+      {/* TinyMCE Editor */}
+      <Editor
+        apiKey="nwpfrqu2brgnghj0jbw2g4iaxo2wpt04wimcfhkcwzvoxvb2"
+        value={content}
+        onEditorChange={(newContent) => setContent(newContent)}
+        init={{
+          height: 500,
+          menubar: true,
+          plugins: [
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists',
+            'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+            'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed',
+            'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable',
+            'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments',
+            'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography',
+            'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
           ],
-          toolbarSticky: false,
+          toolbar:
+            'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | ' +
+            'link image media table mergetags | addcomment showcomments | spellcheckdialog ' +
+            'a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | ' +
+            'emoticons charmap | removeformat',
+          tinycomments_mode: 'embedded',
+          tinycomments_author: 'Author name',
+          mergetags_list: [
+            { value: 'First.Name', title: 'First Name' },
+            { value: 'Email', title: 'Email' },
+          ],
+          ai_request: (request, respondWith) =>
+            respondWith.string(() =>
+              Promise.reject('See docs to implement AI Assistant')
+            ),
         }}
       />
 
       <div className="mt-4">
-        <PublishButton title={title} content={content} />
+        <PublishButton
+          title={title}
+          content={content}
+          isEditing={!!editBlog}
+          blogId={editBlog?._id}
+        />
       </div>
     </div>
   );

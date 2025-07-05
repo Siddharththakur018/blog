@@ -9,33 +9,39 @@ const Blogs = () => {
   const navigate = useNavigate();
 
   const fetchBlogs = async () => {
-    try {
-      setError(null);
-      const response = await axios.get('http://localhost:3000/api/post/getallposts', {
-        withCredentials: true,
-      });
-      const sortedPosts = response.data.posts.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      setPosts(sortedPosts);
-    } catch (error) {
-      setError('Failed to load blogs. Please try refreshing the page.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setError(null);
+    const response = await axios.get('http://localhost:3000/api/post/getallposts', {
+      withCredentials: true,
+    });
+
+    // 🛠️ Filter only published posts
+    const publishedPosts = response.data.posts.filter(post => post.status === 'Published');
+
+    const sortedPosts = publishedPosts.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    setPosts(sortedPosts);
+  } catch (error) {
+    setError('Failed to load blogs. Please try refreshing the page.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchBlogs();
   }, []);
 
-  const handlePostClick = (post) => {
+  const handlePostClick = (id) => {
     const hoursSinceCreated = (new Date() - new Date(post.createdAt)) / 3600000;
     const isLocked = hoursSinceCreated < 24;
     if (isLocked) {
       navigate('/subscribe');
     } else {
-      navigate(`/posts/${post._id}`);
+      navigate(`/view-blog/${blog._id}`);
     }
   };
 
