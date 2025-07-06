@@ -19,10 +19,12 @@ app.use(cookieParser());
 const userRoutes = require('./router/userRoutes');
 const postRoutes = require('./router/postRoutes');
 const contactRoutes = require('./router/contactRoutes');
+const paymentRoutes = require('./router/paymentRoutes');
 
 app.use('/api/users', userRoutes)
 app.use('/api/post', postRoutes)
 app.use('/api/contact', contactRoutes);
+app.use('/api/payment', paymentRoutes);
 
 
 
