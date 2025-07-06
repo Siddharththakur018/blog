@@ -23,7 +23,6 @@ function SignIn() {
                 const { token, user } = response.data;
 
                 login(user, token); // ✅ update AuthContext
-                localStorage.setItem("user", JSON.stringify(user)); // Optional: keep user in localStorage
                 navigate('/'); // Redirect after login
             }
         } catch (error) {

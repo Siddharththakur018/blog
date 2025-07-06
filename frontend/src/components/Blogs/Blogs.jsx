@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Blogs = () => {
   const [posts, setPosts] = useState([]);
@@ -149,7 +149,7 @@ const Blogs = () => {
         <p className="text-gray-700 text-base">
           {truncateContent(latestPost.content, 300)}
         </p>
-        <span className="mt-4 block text-blue-600 font-medium">Read Full Article →</span>
+        <Link to='/subscribe' className="mt-4 block text-blue-600 font-medium">Read Full Article →</Link>
         {(new Date() - new Date(latestPost.createdAt)) / 3600000 < 24 && (
           <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 text-xs rounded font-semibold">
             🔒 Locked (24h)

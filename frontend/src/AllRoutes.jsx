@@ -12,6 +12,7 @@ import Payment from './components/Payment/Payment'
 import BlogView from './components/CreateBlogs/BlogView'
 import CreateBlog from './components/CreateBlogs/CreateBlog'
 import ViewBlogs from './components/Blogs/ViewBlogs'
+import Footer from './components/Footer/Footer'
 
 function AllRoutes() {
     const location = useLocation();
@@ -33,6 +34,7 @@ function AllRoutes() {
                     <Route path='/create-blog' element={<CreateBlog />} />
                     <Route path='/view-blog/:id' element={<ViewBlogs />} />
                 </Routes>
+                <Footer />
         </>
     )
 }
