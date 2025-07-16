@@ -13,6 +13,7 @@ import BlogView from './components/CreateBlogs/BlogView'
 import CreateBlog from './components/CreateBlogs/CreateBlog'
 import ViewBlogs from './components/Blogs/ViewBlogs'
 import Footer from './components/Footer/Footer'
+import BlogViews from './components/Blogs/BlogViews'
 
 function AllRoutes() {
     const location = useLocation();
@@ -33,6 +34,7 @@ function AllRoutes() {
                     <Route path='/subscribe' element={<Payment />} />
                     <Route path='/create-blog' element={<CreateBlog />} />
                     <Route path='/view-blog/:id' element={<ViewBlogs />} />
+                    <Route path='/view/:id' element={<BlogViews />} />
                 </Routes>
                 <Footer />
         </>

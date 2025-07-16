@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'phosphor-react';
+import CommentBlog from './CommentBlog';
 
-
-function ViewBlogs() {
+function BlogViews() {
     const [blog, setBlog] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -29,7 +29,6 @@ function ViewBlogs() {
         viewBlogs();
     }, [id]);
 
-
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen bg-gray-50">
@@ -47,7 +46,6 @@ function ViewBlogs() {
     }
 
     return (
-        <>
         <div className="bg-white min-h-screen">
             <div className="max-w-3xl mx-auto px-6 py-12">
 
@@ -83,10 +81,9 @@ function ViewBlogs() {
                     <div dangerouslySetInnerHTML={{ __html: blog?.content }} />
                 </div>
             </div>
+                    <CommentBlog postId={id} />
         </div>
-
-        </>
     );
 }
 
-export default ViewBlogs;
+export default BlogViews;

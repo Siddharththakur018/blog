@@ -1,59 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import BlogBanner from './BlogBanner';
+import { useNavigate } from 'react-router-dom';
 
-const Blogs = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+function Blogs() {
+  const [blogs, setBlogs] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const blogsPerPage = 6;
   const navigate = useNavigate();
 
-  const fetchBlogs = async () => {
-  try {
-    setError(null);
-    const response = await axios.get('http://localhost:3000/api/post/getallposts', {
-      withCredentials: true,
-    });
-
-    // 🛠️ Filter only published posts
-    const publishedPosts = response.data.posts.filter(post => post.status === 'Published');
-
-    const sortedPosts = publishedPosts.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-
-    setPosts(sortedPosts);
-  } catch (error) {
-    setError('Failed to load blogs. Please try refreshing the page.');
-  } finally {
-    setLoading(false);
-  }
-};
-
-
   useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/post/getallposts', {
+          withCredentials: true,
+        });
+        setBlogs(response.data.posts);
+      } catch (error) {
+        console.error('Error fetching the blogs:', error);
+      }
+    };
     fetchBlogs();
   }, []);
 
-  const handlePostClick = (id) => {
-    const hoursSinceCreated = (new Date() - new Date(post.createdAt)) / 3600000;
-    const isLocked = hoursSinceCreated < 24;
-    if (isLocked) {
-      navigate('/subscribe');
-    } else {
-      navigate(`/view-blog/${blog._id}`);
-    }
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const isLocked = (createdAt) => {
+    const now = new Date();
+    const createdDate = new Date(createdAt);
+    return now - createdDate < 24 * 60 * 60 * 1000;
   };
 
   const stripHtml = (html) => {
@@ -62,107 +35,136 @@ const Blogs = () => {
     return temp.textContent || temp.innerText || '';
   };
 
-  const truncateContent = (content, maxLength = 200) => {
-    const textContent = stripHtml(content);
-    if (textContent.length <= maxLength) return textContent;
-    return textContent.substring(0, maxLength) + '...';
-  };
+  const totalPages = Math.ceil(blogs.length / blogsPerPage);
+  const indexOfLastBlog = currentPage * blogsPerPage;
+  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+  const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px] text-lg text-gray-600">
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
-          Loading articles...
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-16 px-4 text-red-500 text-base">
-        <div className="text-5xl mb-5">⚠️</div>
-        {error}
-      </div>
-    );
-  }
-
-  if (posts.length === 0) {
-    return (
-      <div className="text-center py-16 px-4 text-gray-400">
-        <div className="text-5xl mb-5">📝</div>
-        <h3 className="text-2xl mb-2 text-gray-500">No articles yet</h3>
-        <p>Be the first to share your thoughts!</p>
-      </div>
-    );
-  }
-
-  const [latestPost, ...restPosts] = posts;
-
-  const renderPostCard = (post) => {
-    const hoursSinceCreated = (new Date() - new Date(post.createdAt)) / 3600000;
-    const isLocked = hoursSinceCreated < 24;
-
-    return (
-      <div
-        key={post._id}
-        onClick={() => handlePostClick(post)}
-        className="cursor-pointer bg-white border rounded-xl shadow-sm p-5 transition hover:shadow-lg relative"
-      >
-        {isLocked && (
-          <div className="absolute top-3 right-3 bg-yellow-500 text-white px-2 py-1 text-xs rounded font-semibold">
-            🔒 Locked (24h)
-          </div>
-        )}
-        <h3 className="text-xl font-bold mb-2 text-gray-800">{post.title}</h3>
-        <div className="text-sm text-gray-500 mb-3">
-          By {post.author?.name || 'Unknown'} • {formatDate(post.createdAt)}
-        </div>
-        {isLocked ? (
-          <div className="text-center bg-yellow-50 p-4 border border-yellow-300 rounded-md text-yellow-600 text-sm">
-            Subscribe to unlock this article
-          </div>
-        ) : (
-          <p className="text-gray-600 text-sm">{truncateContent(post.content)}</p>
-        )}
-      </div>
-    );
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 font-sans">
-      <div className="mb-12 text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Latest Blog Posts</h1>
-        <p className="text-lg text-gray-500">Fresh insights and stories delivered daily</p>
-      </div>
+    <>
+      <BlogBanner />
 
-      {/* Featured Latest Blog */}
-      <div
-        onClick={() => handlePostClick(latestPost)}
-        className="mb-12 bg-gradient-to-r from-blue-100 to-white p-8 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition relative"
-      >
-        <h2 className="text-3xl font-bold text-blue-900 mb-3">{latestPost.title}</h2>
-        <div className="text-sm text-gray-600 mb-4">
-          By {latestPost.author?.name || 'Unknown'} • {formatDate(latestPost.createdAt)}
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <h2 className="text-4xl font-extrabold text-center text-gray-800 mb-12">
+          🌟 Explore Our Latest Blogs
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+          {currentBlogs.map((blog) => {
+            const locked = isLocked(blog.createdAt);
+            const handleClick = () =>
+              locked ? navigate('/subscribe') : navigate(`/view/${blog._id}`);
+
+            return (
+              <div
+                key={blog._id}
+                onClick={handleClick}
+                className={`group relative cursor-pointer overflow-hidden rounded-xl shadow-md transition-transform duration-300 hover:scale-105 ${
+                  locked ? 'opacity-70' : ''
+                }`}
+              >
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
+
+                <div className="relative z-20 p-5 h-full bg-white flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-semibold text-gray-900 line-clamp-2">
+                      {blog.title}
+                    </h3>
+
+                    <div className="flex items-center text-sm text-gray-500 gap-2">
+                      <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
+                        {blog.author?.name?.charAt(0).toUpperCase() || '?'}
+                      </div>
+                      <span>{blog.author?.name || 'Unknown Author'}</span>
+                      <span className="mx-1 text-gray-400">•</span>
+                      <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+                    </div>
+
+                    <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                      {stripHtml(blog.content).slice(0, 180) || 'No summary available.'}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 text-right">
+                    <span
+                      className={`text-sm font-medium transition ${
+                        locked
+                          ? 'text-gray-400'
+                          : 'text-blue-600 hover:text-blue-800 underline'
+                      }`}
+                    >
+                      {locked ? '🔒 Subscribe to Unlock' : 'Read More →'}
+                    </span>
+                  </div>
+                </div>
+
+                {locked && (
+                  <div className="absolute inset-0 z-30 bg-white/60 backdrop-blur-sm flex items-center justify-center">
+                    <p className="text-sm text-gray-700 font-medium">Locked - Subscribe to Read</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-        <p className="text-gray-700 text-base">
-          {truncateContent(latestPost.content, 300)}
-        </p>
-        <Link to='/subscribe' className="mt-4 block text-blue-600 font-medium">Read Full Article →</Link>
-        {(new Date() - new Date(latestPost.createdAt)) / 3600000 < 24 && (
-          <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 text-xs rounded font-semibold">
-            🔒 Locked (24h)
+
+        {/* Pagination */}
+        {blogs.length > blogsPerPage && (
+          <div className="mt-14 flex justify-center">
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-md border text-sm font-medium transition ${
+                  currentPage === 1
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                ← Prev
+              </button>
+
+              {[...Array(totalPages)].map((_, i) => {
+                const page = i + 1;
+                return (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`w-10 h-10 text-sm rounded-full transition font-medium border ${
+                      currentPage === page
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-300'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-md border text-sm font-medium transition ${
+                  currentPage === totalPages
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Next →
+              </button>
+            </div>
           </div>
         )}
-      </div>
-
-      {/* Grid of Remaining Posts */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {restPosts.map((post) => renderPostCard(post))}
-      </div>
-    </div>
+      </section>
+    </>
   );
-};
+}
 
 export default Blogs;

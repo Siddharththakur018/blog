@@ -3,6 +3,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { ArrowLeft } from 'phosphor-react';
 import { Link, useLocation } from 'react-router-dom';
 import PublishButton from './PublishButton';
+import axios from 'axios';
 
 function BlogMaker() {
   const location = useLocation();
@@ -10,6 +11,87 @@ function BlogMaker() {
 
   const [title, setTitle] = useState(editBlog?.title || '');
   const [content, setContent] = useState(editBlog?.content || '');
+
+  const API_KEY_URL = 'AIzaSyAp2npRnRiviJpxeawCAjCDJ7SCUqD-f38';
+
+
+  const apiUrl = async () => {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY_URL}`;
+
+    const prompt = `
+Write a professional blog post titled: "${title}".
+
+Strictly use this markdown format:
+
+## ${title}
+
+### Introduction
+
+(3-4 sentences introducing the topic)
+
+### Key Point 1: [Insert Relevant Subheading]
+
+- Bullet 1
+- Bullet 2
+
+### Key Point 2: [Insert Relevant Subheading]
+
+- Explanation
+- Examples
+- Lists if needed
+
+### Conclusion
+
+Summarize the post in 2-3 sentences.
+
+Rules:
+- Use proper markdown.
+- Add line breaks after all headings.
+- Do NOT append text to the title heading line.
+`;
+
+    const requestBody = {
+      contents: [
+        {
+          parts: [
+            {
+              text: prompt,
+            },
+          ],
+        },
+      ],
+    };
+
+    try {
+      const response = await axios.post(url, requestBody, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const aiText = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (aiText) {
+        const cleanBlogMarkdown = (text) => {
+          return text
+            // Add new lines after headings
+            .replace(/(#+ .+)/g, '\n$1\n')
+            // Remove duplicate newlines
+            .replace(/\n{3,}/g, '\n\n')
+            // Clean up any strange title formatting issues
+            .replace(/##\s+([^\n]+)\n+(.+)/, '## $1\n\n$2')
+            .trim();
+        };
+
+        const cleanedText = cleanBlogMarkdown(aiText);
+        setContent(cleanedText);
+      }
+
+    } catch (error) {
+      console.error('Error occurred:', error);
+    }
+  };
+
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -67,6 +149,7 @@ function BlogMaker() {
             ),
         }}
       />
+      <button onClick={apiUrl}>Use Ai</button>
 
       <div className="mt-4">
         <PublishButton

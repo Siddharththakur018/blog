@@ -14,7 +14,7 @@ const Footer = () => {
         <div>
           <h1 className="text-2xl font-bold mb-3">NextGenWrites</h1>
           <p className="text-sm text-gray-400">
-            Stories, tech, and thoughts from the next generation of writers.
+            Empowering voices through intelligent storytelling. Explore how AI is transforming the future of blogging.
           </p>
         </div>
 
@@ -38,27 +38,30 @@ const Footer = () => {
           </NavLink>
           {!loading && isLoggedIn ? (
             <NavLink to="/blog-view" className="text-gray-400 hover:text-white transition">
-              Create Blogs
+              Create with AI
             </NavLink>
           ) : !loading ? (
-            <span className="text-gray-600 cursor-not-allowed">Create Blogs</span>
+            <span className="text-gray-600 cursor-not-allowed">Create with AI</span>
           ) : null}
         </div>
 
         {/* Social Media */}
         <div>
-          <h2 className="text-lg font-semibold mb-3">Follow Us</h2>
+          <h2 className="text-lg font-semibold mb-3">Connect with Us</h2>
+          <p className="text-sm text-gray-400 mb-2">
+            Follow us for the latest updates in AI-powered writing and digital storytelling.
+          </p>
           <div className="flex space-x-4">
-            <a href="#" className="hover:text-blue-400 transition">
+            <a href="#" className="hover:text-blue-400 transition" aria-label="Twitter">
               <FaTwitter size={20} />
             </a>
-            <a href="#" className="hover:text-pink-500 transition">
+            <a href="#" className="hover:text-pink-500 transition" aria-label="Instagram">
               <FaInstagram size={20} />
             </a>
-            <a href="#" className="hover:text-blue-600 transition">
+            <a href="#" className="hover:text-blue-600 transition" aria-label="LinkedIn">
               <FaLinkedin size={20} />
             </a>
-            <a href="#" className="hover:text-gray-400 transition">
+            <a href="#" className="hover:text-gray-400 transition" aria-label="GitHub">
               <FaGithub size={20} />
             </a>
           </div>
@@ -67,7 +70,7 @@ const Footer = () => {
 
       {/* Bottom Copyright */}
       <div className="mt-10 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} NextGenWrites. All rights reserved.
+        © {new Date().getFullYear()} NextGenWrites. Built for creators, powered by AI.
       </div>
     </footer>
   );

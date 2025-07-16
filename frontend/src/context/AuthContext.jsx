@@ -1,3 +1,4 @@
+// context/authContext.js
 import { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
@@ -6,41 +7,63 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // ⬇️ Used for displaying user role (plan) everywhere
   const [userPlan, setUserPlan] = useState('normal');
 
-  // ⬇️ This function will be used during login
+  // ✅ Called after login
   const login = (userData, token) => {
     setUser(userData);
     setIsLoggedIn(true);
     localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
+
+    // Set plan from userData.role (if available)
+    if (userData?.role) {
+      setUserPlan(userData.role);
+      localStorage.setItem("userPlan", userData.role);
+    }
   };
 
-  const updatePlan = (plan) => {
-    setUserPlan(plan);
-    localStorage.setItem('userPlan', plan);
-  }
+  // ✅ Called after successful payment
+  const updatePlan = (newPlan) => {
+    setUserPlan(newPlan);
+    localStorage.setItem("userPlan", newPlan);
 
-  // ⬇️ Auto login on refresh if token exists
+    // Also update user.role (in state + localStorage)
+    const updatedUser = { ...user, role: newPlan };
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
+  // ✅ Auto login & restore plan on refresh
   useEffect(() => {
     const token = localStorage.getItem("token");
-     const storedPlan = localStorage.getItem("userPlan");
-    if (token) {
-      // You should decode or fetch user here
-      const storedUser = JSON.parse(localStorage.getItem("user"));
-      if (storedUser) {
-        setUser(storedUser);
-        setIsLoggedIn(true);
-      }
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const storedPlan = localStorage.getItem("userPlan");
+
+    if (token && storedUser) {
+      setUser(storedUser);
+      setIsLoggedIn(true);
     }
-    if(storedPlan){
-      setUserPlan(storedPlan)
+
+    if (storedPlan) {
+      setUserPlan(storedPlan);
     }
+
     setLoading(false);
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoggedIn, loading, login, updatePlan }}
+      value={{
+        user,
+        isLoggedIn,
+        loading,
+        login,
+        updatePlan,
+        currentUser: { ...user, role: userPlan }, // 🟢 Add currentUser with plan role
+      }}
     >
       {children}
     </AuthContext.Provider>
