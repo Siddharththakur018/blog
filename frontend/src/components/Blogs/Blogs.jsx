@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import BlogBanner from './BlogBanner';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/authContext';
 
 function Blogs() {
   const [blogs, setBlogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const blogsPerPage = 6;
   const navigate = useNavigate();
+
+  const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -23,10 +26,37 @@ function Blogs() {
     fetchBlogs();
   }, []);
 
-  const isLocked = (createdAt) => {
+  // Lock logic based on plan + display remaining time
+  const getUnlockDelay = (plan) => {
+    const delays = {
+      premium: 0,
+      basic: 12 * 60 * 60 * 1000,
+      free: 24 * 60 * 60 * 1000,
+    };
+    return delays[plan] ?? delays.free;
+  };
+
+  const getRemainingTime = (createdAt) => {
     const now = new Date();
-    const createdDate = new Date(createdAt);
-    return now - createdDate < 24 * 60 * 60 * 1000;
+    const created = new Date(createdAt);
+    const userPlan = currentUser?.role || 'free';
+    const unlockDelay = getUnlockDelay(userPlan);
+    const unlockTime = created.getTime() + unlockDelay;
+    const remaining = unlockTime - now.getTime();
+
+    if (!currentUser) return Infinity; // lock if not logged in
+
+    return remaining > 0 ? remaining : 0;
+  };
+
+  const formatTimeLeft = (ms) => {
+    if (ms === Infinity) return 'Login to view';
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${hours}h ${minutes}m ${seconds}s`;
   };
 
   const stripHtml = (html) => {
@@ -58,9 +88,16 @@ function Blogs() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {currentBlogs.map((blog) => {
-            const locked = isLocked(blog.createdAt);
-            const handleClick = () =>
-              locked ? navigate('/subscribe') : navigate(`/view/${blog._id}`);
+            const remainingTime = getRemainingTime(blog.createdAt);
+            const locked = remainingTime > 0;
+
+            const handleClick = () => {
+              if (locked) {
+                navigate('/subscribe');
+              } else {
+                navigate(`/view/${blog._id}`);
+              }
+            };
 
             return (
               <div
@@ -100,14 +137,18 @@ function Blogs() {
                           : 'text-blue-600 hover:text-blue-800 underline'
                       }`}
                     >
-                      {locked ? '🔒 Subscribe to Unlock' : 'Read More →'}
+                      {locked ? `🔒 Unlocks in ${formatTimeLeft(remainingTime)}` : 'Read More →'}
                     </span>
                   </div>
                 </div>
 
                 {locked && (
                   <div className="absolute inset-0 z-30 bg-white/60 backdrop-blur-sm flex items-center justify-center">
-                    <p className="text-sm text-gray-700 font-medium">Locked - Subscribe to Read</p>
+                    <p className="text-sm text-gray-700 font-medium">
+                      {currentUser
+                        ? `Locked - Unlocks in ${formatTimeLeft(remainingTime)}`
+                        : '🔐 Login to Unlock'}
+                    </p>
                   </div>
                 )}
               </div>

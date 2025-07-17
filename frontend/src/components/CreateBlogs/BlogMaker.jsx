@@ -4,6 +4,7 @@ import { ArrowLeft } from 'phosphor-react';
 import { Link, useLocation } from 'react-router-dom';
 import PublishButton from './PublishButton';
 import axios from 'axios';
+import { marked } from 'marked'; // 🔥 Import marked
 
 function BlogMaker() {
   const location = useLocation();
@@ -14,40 +15,53 @@ function BlogMaker() {
 
   const API_KEY_URL = 'AIzaSyAp2npRnRiviJpxeawCAjCDJ7SCUqD-f38';
 
-
   const apiUrl = async () => {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY_URL}`;
 
     const prompt = `
-Write a professional blog post titled: "${title}".
+You are a professional blog writer. Write a compelling, fully polished blog post with the title: **"${title}"**
 
-Strictly use this markdown format:
+### Guidelines:
+- Use professional markdown syntax.
+- Follow the structure below.
+- Each section must include **rich content**, **examples**, and **engaging storytelling**.
+- The tone should be friendly, informative, and immersive — suitable for a tech-savvy audience or blog readers.
+- The final output should be ready to publish as-is (no edits needed).
+- Use **line breaks** between all headings and sections.
+
+### Structure to Follow:
 
 ## ${title}
 
 ### Introduction
 
-(3-4 sentences introducing the topic)
+Write a vivid, engaging 4–6 sentence introduction that sets the tone and makes the reader curious.
 
-### Key Point 1: [Insert Relevant Subheading]
+### Key Point 1: [Insert Descriptive Subheading Here]
 
-- Bullet 1
-- Bullet 2
+Write 2–3 rich paragraphs explaining this key point. 
+Include:
+- Real-world context or data
+- Specific examples
+- Emotional or cultural resonance if applicable
 
-### Key Point 2: [Insert Relevant Subheading]
+### Key Point 2: [Insert Descriptive Subheading Here]
 
-- Explanation
-- Examples
+Continue with another 2–3 paragraphs, providing in-depth explanation.
+Include:
 - Lists if needed
+- Comparisons or anecdotes
+- Emotional or sensory language to bring the topic to life
+
+### Optional Key Point 3: [If Applicable]
+
+(If the topic warrants a third section, add it. Otherwise, skip.)
 
 ### Conclusion
 
-Summarize the post in 2-3 sentences.
+Wrap up with 3–4 sentences that summarize the blog, inspire reflection, or call to action.
 
-Rules:
-- Use proper markdown.
-- Add line breaks after all headings.
-- Do NOT append text to the title heading line.
+Make sure everything is well-formatted, easy to read, and in markdown.
 `;
 
     const requestBody = {
@@ -74,24 +88,20 @@ Rules:
       if (aiText) {
         const cleanBlogMarkdown = (text) => {
           return text
-            // Add new lines after headings
-            .replace(/(#+ .+)/g, '\n$1\n')
-            // Remove duplicate newlines
-            .replace(/\n{3,}/g, '\n\n')
-            // Clean up any strange title formatting issues
-            .replace(/##\s+([^\n]+)\n+(.+)/, '## $1\n\n$2')
+            .replace(/(#+ .+)/g, '\n$1\n') // newline around headings
+            .replace(/\n{3,}/g, '\n\n')    // clean excessive newlines
             .trim();
         };
 
         const cleanedText = cleanBlogMarkdown(aiText);
-        setContent(cleanedText);
+        const htmlContent = marked.parse(cleanedText); // ✅ convert to HTML
+        setContent(htmlContent);
       }
 
     } catch (error) {
       console.error('Error occurred:', error);
     }
   };
-
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -149,7 +159,13 @@ Rules:
             ),
         }}
       />
-      <button onClick={apiUrl}>Use Ai</button>
+
+      <button
+        onClick={apiUrl}
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+      >
+        Use AI
+      </button>
 
       <div className="mt-4">
         <PublishButton

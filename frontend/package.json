@@ -28,6 +28,7 @@
     "icons": "^1.0.0",
     "jodit": "^4.6.2",
     "jodit-react": "^5.2.19",
+    "marked": "^16.0.0",
     "phosphor-react": "^1.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
