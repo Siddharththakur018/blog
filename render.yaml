@@ -1,22 +1,21 @@
 services:
   - type: web
     name: blog-backend
-    runtime: node
-    buildCommand: cd Backend && npm install
-    start: node server.js
-    branch: master
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    branch: main
     plan: free
     envVars:
       - key: MONGO_URL
-      value: false
+        value: your-mongo-uri-here
 
-    - type: web
+  - type: web
     name: blog-frontend
-    runtime: node
+    env: static
+    rootDir: frontend
     buildCommand: npm install && npm run build
-    start: npm run preview
-    branch: master
+    staticPublishPath: build
+    branch: main
     plan: free
-
-
-  
