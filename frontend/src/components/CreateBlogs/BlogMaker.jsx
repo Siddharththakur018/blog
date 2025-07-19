@@ -1,21 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { ArrowLeft } from 'phosphor-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import PublishButton from './PublishButton';
 import axios from 'axios';
-import { marked } from 'marked'; // 🔥 Import marked
+import { marked } from 'marked';
+import { AuthContext } from '../../context/authContext';
 
 function BlogMaker() {
   const location = useLocation();
+  const navigate = useNavigate();
   const editBlog = location.state?.blog;
 
   const [title, setTitle] = useState(editBlog?.title || '');
   const [content, setContent] = useState(editBlog?.content || '');
 
+  const { currentUser, updatePlan } = useContext(AuthContext);
+
   const API_KEY_URL = 'AIzaSyAp2npRnRiviJpxeawCAjCDJ7SCUqD-f38';
 
+  const isSameWeek = (date1, date2) => {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    const week1 = Math.ceil((((d1 - new Date(d1.getFullYear(), 0, 1)) / 86400000) + d1.getDay() + 1) / 7);
+    const week2 = Math.ceil((((d2 - new Date(d2.getFullYear(), 0, 1)) / 86400000) + d2.getDay() + 1) / 7);
+    return week1 === week2 && d1.getFullYear() === d2.getFullYear();
+  };
+
   const apiUrl = async () => {
+    const now = new Date();
+
+    // Normalize user role
+    let role = currentUser?.role || 'normal';
+    if (role === 'normal') role = 'free';
+
+    const aiUses = currentUser?.aiUses || 0;
+    const lastUsed = currentUser?.lastUsed ? new Date(currentUser.lastUsed) : null;
+    const premiumExpiry = currentUser?.premiumExpiry ? new Date(currentUser.premiumExpiry) : null;
+
+    // FREE USERS (normal)
+    if (role === 'free') {
+      alert('AI features are only available for Medium or Premium users. Please subscribe.');
+      navigate('/subscribe');
+      return;
+    }
+
+    // PREMIUM EXPIRED
+    if (role === 'premium' && premiumExpiry && now > premiumExpiry) {
+      alert('Your Premium plan has expired. You have been downgraded to Free.');
+      updatePlan('normal'); // downgrade
+      navigate('/subscribe');
+      return;
+    }
+
+    // MEDIUM PLAN CHECKS
+    if (role === 'medium') {
+      if (lastUsed && isSameWeek(lastUsed, now) && aiUses >= 1) {
+        alert('You have already used AI this week. Upgrade to Premium for unlimited access.');
+        return;
+      }
+
+      if (title.trim().split(/\s+/).length > 200) {
+        alert('Medium plan allows prompts up to 200 words.');
+        return;
+      }
+
+      // Update AI usage in localStorage (simulate backend)
+      const updatedUser = {
+        ...currentUser,
+        aiUses: isSameWeek(lastUsed, now) ? aiUses + 1 : 1,
+        lastUsed: now,
+      };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+
+    // AI PROMPT GENERATION
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY_URL}`;
 
     const prompt = `
@@ -65,22 +124,12 @@ Make sure everything is well-formatted, easy to read, and in markdown.
 `;
 
     const requestBody = {
-      contents: [
-        {
-          parts: [
-            {
-              text: prompt,
-            },
-          ],
-        },
-      ],
+      contents: [{ parts: [{ text: prompt }] }],
     };
 
     try {
       const response = await axios.post(url, requestBody, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       const aiText = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -94,10 +143,9 @@ Make sure everything is well-formatted, easy to read, and in markdown.
         };
 
         const cleanedText = cleanBlogMarkdown(aiText);
-        const htmlContent = marked.parse(cleanedText); // ✅ convert to HTML
+        const htmlContent = marked.parse(cleanedText);
         setContent(htmlContent);
       }
-
     } catch (error) {
       console.error('Error occurred:', error);
     }
@@ -125,7 +173,6 @@ Make sure everything is well-formatted, easy to read, and in markdown.
         onChange={(e) => setTitle(e.target.value)}
       />
 
-      {/* TinyMCE Editor */}
       <Editor
         apiKey="nwpfrqu2brgnghj0jbw2g4iaxo2wpt04wimcfhkcwzvoxvb2"
         value={content}
@@ -153,10 +200,6 @@ Make sure everything is well-formatted, easy to read, and in markdown.
             { value: 'First.Name', title: 'First Name' },
             { value: 'Email', title: 'Email' },
           ],
-          ai_request: (request, respondWith) =>
-            respondWith.string(() =>
-              Promise.reject('See docs to implement AI Assistant')
-            ),
         }}
       />
 
