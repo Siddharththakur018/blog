@@ -1,5 +1,5 @@
 import { BrowserRouter } from 'react-router-dom'
-import AllRoutes from './allRoutes'
+import AllRoutes from './AllRoutes'
 import './App.css'
 import { Toaster } from 'react-hot-toast' // ✅ Import it
 
