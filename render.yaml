@@ -18,4 +18,3 @@ services:
     buildCommand: npm install && npm run build
     staticPublishPath: build
     branch: main
-    plan: free
