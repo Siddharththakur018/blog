@@ -20,7 +20,7 @@ function ContactUs() {
 
   const optionData = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/contact/dropdown-options');
+      const response = await axios.get('${import.meta.env.VITE_SITE_URL}/api/contact/dropdown-options');
       setInquiryOption(response.data.inquiryOption);
       setDesciptionOption(response.data.desciptionOption);
     } catch (error) {
@@ -62,7 +62,7 @@ function ContactUs() {
         organization: organisation,
         message: message,
       }
-      const response = await axios.post('http://localhost:3000/api/contact/contact-form', payload,{
+      const response = await axios.post('${import.meta.env.VITE_SITE_URL}/api/contact/contact-form', payload,{
         withCredentials: true
         }
       );

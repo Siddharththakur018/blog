@@ -16,7 +16,7 @@ function CommentBlog({ postId, postAuthorId }) {
 
     const fetchComments = async () => {
         try {
-            const res = await axios.get(`http://localhost:3000/api/comment/post/${postId}`);
+            const res = await axios.get(`${import.meta.env.VITE_SITE_URL}/api/comment/post/${postId}`);
             setComments(res.data);
         } catch (err) {
             setError('Unable to load comments. Please try again later.');
@@ -28,7 +28,7 @@ function CommentBlog({ postId, postAuthorId }) {
 
         try {
             const res = await axios.post(
-                'http://localhost:3000/api/comment/addComment',
+                '${import.meta.env.VITE_SITE_URL}/api/comment/addComment',
                 {
                     content: commentText,
                     postId: postId,
@@ -47,7 +47,7 @@ function CommentBlog({ postId, postAuthorId }) {
 
     const handleDelete = async (commentId) => {
         try {
-            await axios.delete(`http://localhost:3000/api/comment/${commentId}`, {
+            await axios.delete(`${import.meta.env.VITE_SITE_URL}/api/comment/${commentId}`, {
                 withCredentials: true,
             });
             setComments(prev => prev.filter(comment => comment._id !== commentId));

@@ -16,7 +16,7 @@ function BlogTable() {
 
   const blogData = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/post/getpostbyuserid", {
+      const response = await axios.get("${import.meta.env.VITE_SITE_URL}/api/post/getpostbyuserid", {
         withCredentials: true,
       });
       setData(response.data.posts);
@@ -39,7 +39,7 @@ function BlogTable() {
   const toggleStatus = async (id, currentStatus) => {
     const newStatus = currentStatus === 'Published' ? 'Draft' : 'Published';
     try {
-      await axios.post(`http://localhost:3000/api/post/${id}/status`, {
+      await axios.post(`${import.meta.env.VITE_SITE_URL}/api/post/${id}/status`, {
         status: newStatus,
       }, {
         withCredentials: true,
@@ -52,7 +52,7 @@ function BlogTable() {
 
   const updateBlog = async (id) => {
     try {
-      await axios.patch(`http://localhost:3000/api/post/updatepost/${id}`, {}, {
+      await axios.patch(`${import.meta.env.VITE_SITE_URL}/api/post/updatepost/${id}`, {}, {
         withCredentials: true
       });
       blogData();
@@ -63,7 +63,7 @@ function BlogTable() {
 
   const deleteBlog = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/post/deletepost/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_SITE_URL}/api/post/deletepost/${id}`, {
         withCredentials: true
       });
       blogData();

@@ -28,7 +28,7 @@ function PublishButton({ title, content, status = 'Published', isEditing = false
       if (isEditing && blogId) {
         // Updating an existing blog
         response = await axios.patch(
-          `http://localhost:3000/api/post/updatepost/${blogId}`,
+          `${import.meta.env.VITE_SITE_URL}/api/post/updatepost/${blogId}`,
           payload,
           {
             withCredentials: true,
@@ -40,7 +40,7 @@ function PublishButton({ title, content, status = 'Published', isEditing = false
       } else {
         // Creating a new blog
         response = await axios.post(
-          'http://localhost:3000/api/post/createpost',
+          '${import.meta.env.VITE_SITE_URL}/api/post/createpost',
           payload,
           {
             withCredentials: true,

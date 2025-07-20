@@ -14,7 +14,7 @@ function SignIn() {
 
         try {
             const response = await axios.post(
-                'http://localhost:3000/api/users/loginUser',
+                '${import.meta.env.VITE_SITE_URL}/api/users/loginUser',
                 { email, password },
                 { withCredentials: true }
             );

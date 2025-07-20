@@ -19,7 +19,7 @@ function Blogs() {
       try {
         setLoading(true);
         const response = await axios.get(
-          `http://localhost:3000/api/post/getallposts?page=${currentPage}&limit=${blogsPerPage}`,
+          `${import.meta.env.VITE_SITE_URL}/api/post/getallposts?page=${currentPage}&limit=${blogsPerPage}`,
           { withCredentials: true }
         );
 
