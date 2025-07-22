@@ -13,7 +13,7 @@ function BlogViews() {
     const viewBlogs = async () => {
         try {
             const response = await axios.get(
-                `${import.meta.env.VITE_SITE_URL}//api/post/getpostbyid/${id}`,
+                `${import.meta.env.VITE_SITE_URL}/api/post/getpostbyid/${id}`,
                 { withCredentials: true }
             );
             setBlog(response.data.posts);
