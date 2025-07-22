@@ -16,7 +16,7 @@ function BlogTable() {
 
   const blogData = async () => {
     try {
-      const response = await axios.get("${import.meta.env.VITE_SITE_URL}/api/post/getpostbyuserid", {
+      const response = await axios.get(`${import.meta.env.VITE_SITE_URL}/api/post/getpostbyuserid`, {
         withCredentials: true,
       });
       setData(response.data.posts);

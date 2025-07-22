@@ -40,7 +40,7 @@ function PublishButton({ title, content, status = 'Published', isEditing = false
       } else {
         // Creating a new blog
         response = await axios.post(
-          '${import.meta.env.VITE_SITE_URL}/api/post/createpost',
+          `${import.meta.env.VITE_SITE_URL}/api/post/createpost`,
           payload,
           {
             withCredentials: true,

@@ -28,7 +28,7 @@ function CommentBlog({ postId, postAuthorId }) {
 
         try {
             const res = await axios.post(
-                '${import.meta.env.VITE_SITE_URL}/api/comment/addComment',
+                `${import.meta.env.VITE_SITE_URL}/api/comment/addComment`,
                 {
                     content: commentText,
                     postId: postId,

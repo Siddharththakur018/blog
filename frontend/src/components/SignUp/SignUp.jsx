@@ -16,7 +16,7 @@ function SignUp() {
         }
 
         try {
-            const response = await axios.post('${import.meta.env.VITE_SITE_URL}/api/users/register', {
+            const response = await axios.post(`${import.meta.env.VITE_SITE_URL}/api/users/register`, {
                 name,
                 email,
                 password

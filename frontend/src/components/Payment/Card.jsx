@@ -48,7 +48,7 @@ function Card({ selectedPlan, showModal, setShowModal }) {
       };
 
       const response = await axios.post(
-        '${import.meta.env.VITE_SITE_URL}/api/payment/fake-payment',
+        `${import.meta.env.VITE_SITE_URL}/api/payment/fake-payment`,
         payload,
         { withCredentials: true }
       );
