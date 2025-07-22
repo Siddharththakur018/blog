@@ -38,21 +38,31 @@ export const AuthProvider = ({ children }) => {
 
   // ✅ Auto login & restore plan on refresh
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    const storedPlan = localStorage.getItem("userPlan");
+  const token = localStorage.getItem("token");
+  const userString = localStorage.getItem("user");
+  const storedPlan = localStorage.getItem("userPlan");
 
-    if (token && storedUser) {
-      setUser(storedUser);
-      setIsLoggedIn(true);
+  let storedUser = null;
+  try {
+    if (userString && userString !== "undefined") {
+      storedUser = JSON.parse(userString);
     }
+  } catch (err) {
+    console.error("Failed to parse user from localStorage:", err);
+  }
 
-    if (storedPlan) {
-      setUserPlan(storedPlan);
-    }
+  if (token && storedUser) {
+    setUser(storedUser);
+    setIsLoggedIn(true);
+  }
 
-    setLoading(false);
-  }, []);
+  if (storedPlan) {
+    setUserPlan(storedPlan);
+  }
+
+  setLoading(false);
+}, []);
+
 
   return (
     <AuthContext.Provider
