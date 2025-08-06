@@ -13,7 +13,6 @@ function Blogs() {
   const navigate = useNavigate();
   const { currentUser } = useContext(AuthContext);
 
-  // Fetch paginated blogs from backend
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -86,7 +85,10 @@ function Blogs() {
         </h2>
 
         {loading ? (
-          <p className="text-center text-gray-500">Loading blogs...</p>
+          <div className="flex flex-col items-center justify-center h-64 gap-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+            <p className="text-gray-500 text-lg">Fetching awesome blogs...</p>
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -159,7 +161,6 @@ function Blogs() {
               })}
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="mt-14 flex justify-center">
                 <div className="flex items-center gap-2 flex-wrap">

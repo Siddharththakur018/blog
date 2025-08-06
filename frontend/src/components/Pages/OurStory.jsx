@@ -75,110 +75,66 @@ function OurStory() {
         },
     ];
 
-    const firstRow = teamMembers.slice(0, 4);
-    const secondRow = teamMembers.slice(4);
-
     const getHoverColor = (index) => {
         const colors = ['#ffe4e6', '#fef9c3', '#d1fae5', '#e0f2fe', '#ede9fe', '#fef3c7', '#f3e8ff'];
         return colors[index % colors.length];
     };
 
     return (
-        <div className='w-[1200px] mx-auto p-4'>
-            <div>
-                <div className='flex gap-5 items-center mb-4 mt-10'>
-                    <GoStarFill className='text-4xl' />
-                    <p className='border rounded-xl text-xl p-2 font-semibold w-20 text-center'>Who</p>
-                    <p className='border rounded-xl text-xl p-2 font-semibold w-20 text-center'>We</p>
-                    <p className='border rounded-xl text-xl p-2 font-semibold w-20 text-center'>Are</p>
-                </div>
-                <div className='text-8xl mb-4 mt-10 font-semibold'>
-                    <p>A TEAM OF</p>
-                    <p>BLOG EXPERTS</p>
-                </div>
-                <hr className='mb-10' />
-                <div className='flex gap-10 items-center'>
-                    <div>
-                        <p className='uppercase font-semibold w-96'>
-                            NextGenWrites started as a simple idea to make blogging smarter and faster—evolving into a full platform powered by AI, and open publishing.
-                        </p>
-                    </div>
-                    <div>
-                        <p className='w-[750px]'>
-                            At <strong>NextGenWrites</strong>, we’re redefining digital storytelling by combining the power of AI, and open publishing. Our mission is to empower creators and readers through decentralized tools, content ownership, and smarter writing experiences. We believe in open access, transparent systems, and a future where anyone can share their voice without barriers. By merging technology with creativity, we’re building a platform that values authenticity, community, and the freedom to create without limits.
-                        </p>
-                    </div>
-                </div>
+        <div className='max-w-screen-xl mx-auto px-4 py-8'>
+            <div className='flex flex-wrap gap-4 items-center justify-center mb-10'>
+                <GoStarFill className='text-3xl sm:text-4xl' />
+                <p className='border rounded-xl text-lg sm:text-xl p-2 font-semibold w-20 text-center'>Who</p>
+                <p className='border rounded-xl text-lg sm:text-xl p-2 font-semibold w-20 text-center'>We</p>
+                <p className='border rounded-xl text-lg sm:text-xl p-2 font-semibold w-20 text-center'>Are</p>
             </div>
 
-            <div className='mt-16 space-y-16'>
-                <div className='flex justify-center gap-6'>
-                    {firstRow.map((item, index) => (
-                        <div key={index} className='flex flex-col items-center'>
-                            <div
-                                className='w-64 h-72 relative group border rounded-4xl overflow-hidden shadow-md transition-colors duration-300 cursor-pointer'
-                                style={{ '--hover-color': getHoverColor(index) }}
-                            >
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className='w-64 h-full object-cover group-hover:hidden transition duration-300'
-                                />
-                                <div
-                                    className='absolute inset-0 p-8 flex flex-col justify-between 
-                                        transform translate-y-full opacity-0 
-                                        group-hover:translate-y-0 group-hover:opacity-100 
-                                        transition-all duration-700 ease-in-out overflow-y-auto'
-                                    style={{ backgroundColor: `var(--hover-color)` }}
-                                >
-                                    <div>
-                                        <p className='text-sm text-gray-700'>{item.description}</p>
-                                    </div>
-                                    <div className='flex gap-4 mt-4 text-sm justify-center items-center'>
-                                        <a href={item.instagram} target='_blank' rel='noopener noreferrer' className='text-4xl'><LuInstagram /></a>
-                                        <a href={item.linkedin} target='_blank' rel='noopener noreferrer' className='text-4xl'><FaLinkedin /></a>
-                                        <a href={item.twitter} target='_blank' rel='noopener noreferrer' className='text-4xl'><FaTwitter /></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <h3 className='text-lg font-bold mb-2'>{item.name}</h3>
-                        </div>
-                    ))}
-                </div>
+            <div className='text-center text-4xl sm:text-6xl font-semibold mb-8'>
+                <p>A TEAM OF</p>
+                <p>BLOG EXPERTS</p>
+            </div>
 
-                <div className='flex justify-center gap-6'>
-                    {secondRow.map((item, index) => (
-                        <div key={index + 4} className='flex flex-col items-center'>
+            <hr className='mb-10 border-gray-300' />
+
+            <div className='flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-between'>
+                <p className='uppercase font-semibold max-w-md text-center lg:text-left'>
+                    NextGenWrites started as a simple idea to make blogging smarter and faster—evolving into a full platform powered by AI, and open publishing.
+                </p>
+                <p className='max-w-2xl text-center lg:text-left'>
+                    At <strong>NextGenWrites</strong>, we’re redefining digital storytelling by combining the power of AI, and open publishing. Our mission is to empower creators and readers through decentralized tools, content ownership, and smarter writing experiences. We believe in open access, transparent systems, and a future where anyone can share their voice without barriers. By merging technology with creativity, we’re building a platform that values authenticity, community, and the freedom to create without limits.
+                </p>
+            </div>
+
+            <div className='mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10'>
+                {teamMembers.map((item, index) => (
+                    <div key={index} className='flex flex-col items-center'>
+                        <div
+                            className='w-64 h-72 relative group border rounded-3xl overflow-hidden shadow-md transition-colors duration-300 cursor-pointer'
+                            style={{ '--hover-color': getHoverColor(index) }}
+                        >
+                            <img
+                                src={item.image}
+                                alt={item.name}
+                                className='w-full h-full object-cover group-hover:hidden transition duration-300'
+                            />
                             <div
-                                className='w-64 h-72 relative group border rounded-4xl overflow-hidden shadow-md transition-colors duration-300 cursor-pointer'
-                                style={{ '--hover-color': getHoverColor(index + 4) }}
+                                className='absolute inset-0 p-6 flex flex-col justify-between 
+                                    transform translate-y-full opacity-0 
+                                    group-hover:translate-y-0 group-hover:opacity-100 
+                                    transition-all duration-700 ease-in-out overflow-y-auto'
+                                style={{ backgroundColor: `var(--hover-color)` }}
                             >
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className='w-64 h-full object-cover group-hover:hidden transition duration-300'
-                                />
-                                <div
-                                    className='absolute inset-0 p-8 flex flex-col justify-between 
-                                        transform translate-y-full opacity-0 
-                                        group-hover:translate-y-0 group-hover:opacity-100 
-                                        transition-all duration-700 ease-in-out overflow-y-auto'
-                                    style={{ backgroundColor: `var(--hover-color)` }}
-                                >
-                                    <div>
-                                        <p className='text-sm text-gray-700'>{item.description}</p>
-                                    </div>
-                                    <div className='flex gap-4 mt-4 text-sm justify-center items-center'>
-                                        <a href={item.instagram} target='_blank' rel='noopener noreferrer' className='text-4xl'><LuInstagram /></a>
-                                        <a href={item.linkedin} target='_blank' rel='noopener noreferrer' className='text-4xl'><FaLinkedin /></a>
-                                        <a href={item.twitter} target='_blank' rel='noopener noreferrer' className='text-4xl'><FaTwitter /></a>
-                                    </div>
+                                <p className='text-sm text-gray-700'>{item.description}</p>
+                                <div className='flex gap-4 mt-4 justify-center items-center text-2xl'>
+                                    <a href={item.instagram} target='_blank' rel='noopener noreferrer'><LuInstagram /></a>
+                                    <a href={item.linkedin} target='_blank' rel='noopener noreferrer'><FaLinkedin /></a>
+                                    <a href={item.twitter} target='_blank' rel='noopener noreferrer'><FaTwitter /></a>
                                 </div>
                             </div>
-                             <h3 className='text-lg font-bold mb-2'>{item.name}</h3>
                         </div>
-                    ))}
-                </div>
+                        <h3 className='text-lg font-bold mt-2 text-center'>{item.name}</h3>
+                    </div>
+                ))}
             </div>
         </div>
     );
