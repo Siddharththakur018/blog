@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // ⬅️ import navigate hook
 
 function SignUp() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+
+    const navigate = useNavigate(); // ⬅️ initialize navigate
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,16 +19,19 @@ function SignUp() {
         }
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_SITE_URL}/api/users/register`, {
+            await axios.post(`${import.meta.env.VITE_SITE_URL}/api/users/register`, {
                 name,
                 email,
                 password
             });
 
-            setMessage("Registration successful!");
-            setName('');
-            setEmail('');
-            setPassword('');
+            setMessage("Registration successful! Redirecting to login...");
+
+            // Redirect to login after short delay
+            setTimeout(() => {
+                navigate('/signin');
+            }, 1500); // 1.5 seconds
+
         } catch (error) {
             if (error.response && error.response.data) {
                 setMessage(error.response.data.message || "Registration failed.");
@@ -44,7 +50,9 @@ function SignUp() {
                 <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
 
                 {message && (
-                    <p className="mb-4 text-center text-red-500 font-medium">{message}</p>
+                    <p className={`mb-4 text-center font-medium ${message.includes('successful') ? 'text-green-600' : 'text-red-500'}`}>
+                        {message}
+                    </p>
                 )}
 
                 <div className="mb-4">
